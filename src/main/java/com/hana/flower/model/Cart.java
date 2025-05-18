@@ -41,7 +41,7 @@ public class Cart {
     private Long totalPrice;
     
     @Builder.Default
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "cartId", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItem> cartItems = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)

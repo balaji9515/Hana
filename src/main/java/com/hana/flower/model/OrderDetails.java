@@ -45,8 +45,8 @@ public class OrderDetails {
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "delivery_boy_id", nullable = false)
-	private Long deliveryBoyId;
+	@JoinColumn(name = "delivery_boy_id", referencedColumnName = "user_id")
+	private DeliveryBoy deliveryBoy;
 
 	@Column(name = "order_status")
 	private OrderStatus orderStatus;

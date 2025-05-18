@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.Point;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -15,9 +16,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 
 @Entity
 @Table(name = "delivery_boy")
@@ -25,12 +29,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@SuperBuilder
 public class DeliveryBoy extends User {
-
-	@Id
-	@Column(name = "id", nullable = false)
-	private Long id;
-
+	
 	@Column(name = "licence_no", nullable = false)
 	private String licenceNo;
 
@@ -48,11 +49,13 @@ public class DeliveryBoy extends User {
 
 	@Column(name = "total_km", nullable = false)
 	private Long totalKm;
-
+   
+	@Builder.Default
 	@OneToMany(mappedBy = "deliveryBoy", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Vehicle> vehicles = new ArrayList<>();
-
-	@OneToMany(mappedBy = "deliveryBoyId", cascade = CascadeType.ALL, orphanRemoval = true)
+    
+	@Builder.Default
+	@OneToMany(mappedBy = "deliveryBoy", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderDetails> orders = new ArrayList<>();
 
 	@OneToOne(fetch = FetchType.LAZY)

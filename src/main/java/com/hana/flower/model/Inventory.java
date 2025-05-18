@@ -2,7 +2,7 @@ package com.hana.flower.model;
 
 import java.time.Instant;
 
-import org.locationtech.jts.awt.PointShapeFactory.Point;
+import org.locationtech.jts.geom.Point;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

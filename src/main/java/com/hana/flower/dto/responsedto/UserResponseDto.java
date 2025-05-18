@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=false)
 public class UserResponseDto  extends UserRequestDto
 {
-	private String phoneNumber;
-	
+	private String phoneNumber;	
 
 }
