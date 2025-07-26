@@ -5,13 +5,16 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Point;
 
+import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -22,7 +25,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-
 @Entity
 @Table(name = "delivery_boy")
 @Data
@@ -30,8 +32,18 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class DeliveryBoy extends User {
-	
+public class DeliveryBoy {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
+	private Long userId;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@MapsId
+	@JoinColumn(name = "user_id")
+	private User user;
+
 	@Column(name = "licence_no", nullable = false)
 	private String licenceNo;
 
@@ -49,11 +61,11 @@ public class DeliveryBoy extends User {
 
 	@Column(name = "total_km", nullable = false)
 	private Long totalKm;
-   
+
 	@Builder.Default
 	@OneToMany(mappedBy = "deliveryBoy", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Vehicle> vehicles = new ArrayList<>();
-    
+
 	@Builder.Default
 	@OneToMany(mappedBy = "deliveryBoy", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderDetails> orders = new ArrayList<>();
@@ -61,4 +73,7 @@ public class DeliveryBoy extends User {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "current_vehicle", nullable = false)
 	private Vehicle currentVehicle;
+
+	@Column(name = "is_available", nullable = false)
+	private boolean isAvailable;
 }

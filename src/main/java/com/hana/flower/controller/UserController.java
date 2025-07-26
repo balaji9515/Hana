@@ -3,6 +3,7 @@ package com.hana.flower.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,14 +35,16 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+	public ResponseEntity<?> getUserById(@PathVariable Long id) {
 		return userService.getUserById(id);
 	}
 
-	@PostMapping
+	@PostMapping("/create")
 	public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto requestDto) {
-		return userService.createUser(requestDto);
+	    return userService.createUser(requestDto);
+
 	}
+
 
 	@PutMapping("/{id}")
 	public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,

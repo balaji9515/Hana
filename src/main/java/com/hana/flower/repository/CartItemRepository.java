@@ -6,12 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.hana.flower.model.Cart;
 import com.hana.flower.model.CartItem;
 
-public interface CartRepository extends JpaRepository<Cart, Long> {
+public interface CartItemRepository extends JpaRepository<CartItem, Long>{
 	
-	
+	@Query("SELECT ci FROM CartItem ci WHERE ci.cartId.id = :cartId")
+	List<CartItem> findAllByCartId(@Param("cartId") Long cartId);
 
 }
-

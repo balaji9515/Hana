@@ -4,10 +4,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hana.flower.enums.UserType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -22,7 +25,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,6 +32,7 @@ import lombok.experimental.SuperBuilder;
 public class User {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long userId;
 
@@ -58,7 +61,7 @@ public class User {
 	private LocalDateTime updatedAt;
 
 	@Column(name = "user_type", nullable = false)
-	private String userType;
+	private UserType userType;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -77,5 +80,4 @@ public class User {
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private WishList wishList;
-
 }

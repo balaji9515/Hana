@@ -1,5 +1,6 @@
 package com.hana.flower.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.hana.flower.dto.requestdto.UserRequestDto;
 import com.hana.flower.dto.responsedto.UserResponseDto;
+import com.hana.flower.enums.UserType;
 import com.hana.flower.exception.custom.HanaApplicationException;
 import com.hana.flower.model.User;
 import com.hana.flower.repository.UserRepository;
@@ -32,11 +34,12 @@ public class UserService {
 	public List<UserResponseDto> getAllUsers() {
 		return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserResponseDto.class))
 				.collect(Collectors.toList());
- 
+
 	}
 
-	public ResponseEntity<UserResponseDto> getUserById(Long id) {
+	public ResponseEntity<?> getUserById(Long id) {
 		User user = getUser(id);
+		if(null==user) return new ResponseEntity<>("user not found",HttpStatus.OK);
 		return new ResponseEntity<UserResponseDto>(modelMapper.map(user, UserResponseDto.class), HttpStatus.OK);
 	}
 
@@ -49,10 +52,35 @@ public class UserService {
 		return null;
 	}
 
+	public User getUserByPhoneNumber(String phoneNumber) {
+		User user = null;
+		try {
+			user = userRepository.getUserByPhoneNumber(phoneNumber)
+					.orElseThrow(() -> new HanaApplicationException("User not existed"));
+		} catch (HanaApplicationException e) {
+			log.info(e.getMessage());
+		}
+
+		return user;
+	}
+
 	public ResponseEntity<UserResponseDto> createUser(UserRequestDto userDetails) {
-		User user = modelMapper.map(userDetails, User.class);
-		User saved = userRepository.save(user);
-		return new ResponseEntity<UserResponseDto>(modelMapper.map(saved, UserResponseDto.class), HttpStatus.OK);
+
+		User user = getUserByPhoneNumber(userDetails.getPhoneNumber());
+
+		if (null == user) {
+
+			User createdUser = User.builder().firstName(userDetails.getFirstName()).lastName(userDetails.getLastName())
+					.password(userDetails.getPassword()).userEmail(userDetails.getUserEmail())
+					.phoneNumber(userDetails.getPhoneNumber()).userName(userDetails.getUserName())
+					.userType(UserType.CUSTOMER).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
+			User saved = userRepository.save(createdUser);
+			return new ResponseEntity<>(modelMapper.map(saved, UserResponseDto.class),HttpStatus.CREATED);
+		}
+
+		else {
+			return new ResponseEntity<>(modelMapper.map(user, UserResponseDto.class),HttpStatus.CONFLICT);
+		}
 
 	}
 

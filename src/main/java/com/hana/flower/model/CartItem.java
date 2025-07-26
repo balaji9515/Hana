@@ -1,6 +1,6 @@
 package com.hana.flower.model;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,8 +41,8 @@ public class CartItem {
     private Integer quantity;
 
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 }
