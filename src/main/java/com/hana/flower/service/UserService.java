@@ -64,7 +64,7 @@ public class UserService {
 		return user;
 	}
 
-	public ResponseEntity<UserResponseDto> createUser(UserRequestDto userDetails) {
+	public ResponseEntity<?> createUser(UserRequestDto userDetails) {
 
 		User user = getUserByPhoneNumber(userDetails.getPhoneNumber());
 
@@ -79,7 +79,7 @@ public class UserService {
 		}
 
 		else {
-			return new ResponseEntity<>(modelMapper.map(user, UserResponseDto.class),HttpStatus.CONFLICT);
+			return new ResponseEntity<>("User Already Existed",HttpStatus.CONFLICT);
 		}
 
 	}

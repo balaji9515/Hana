@@ -17,8 +17,9 @@ public class WishListService {
 	@Autowired
 	private WishListRepository wishListRepository;
 
-	@Autowired
-	private ProductService productService;
+	/*
+	 * @Autowired private ProductService productService;
+	 */
 
 	@Autowired
 	private UserService userService;

@@ -1,15 +1,19 @@
 package com.hana.flower.model;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 import org.locationtech.jts.geom.Point;
 
+import com.hana.flower.enums.UnitOfMeasure;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,16 +28,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "inventory")
 public class Inventory {
 
-    @Id
-    @Column(name = "id", nullable = false)
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne
-    @MapsId 
-    @JoinColumn(name = "id", referencedColumnName = "id")
+	
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(name = "location", columnDefinition = "geography", nullable = false)
+    @Column(name = "location", columnDefinition = "geography", nullable = true)
     private Point location; 
 
     @Column(name = "quantity_available", nullable = false)
@@ -49,14 +52,14 @@ public class Inventory {
     private Long quantityThreshold;
 
     @Column(name = "unit_of_measure", nullable = false)
-    private Integer unitOfMeasure;
-
+    private UnitOfMeasure unitOfMeasure;
+    
+    @Column(name= "price", nullable=false)
+    private Long price;
+    
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_by", nullable = false)
-    private String updatedBy;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 }

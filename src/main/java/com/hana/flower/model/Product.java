@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,30 +27,33 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "product")
+@Table(
+	    name = "product",
+	    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "category_id"})
+	)
 public class Product {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false)
-	private String name;
+	@Column(name = "name", nullable = false)
+	private String productName;
 
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
 
-	@Column(nullable = false)
-	private String discription;
-
-	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private Inventory inventory;
+	@Column(name = "description", nullable = false)
+	private String productDescription;
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<Inventory> inventory;
 	
 	@Builder.Default
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProductReview> productReviews = new ArrayList<>();
-
+ 
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;

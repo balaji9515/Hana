@@ -3,7 +3,6 @@ package com.hana.flower.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +39,7 @@ public class UserController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto requestDto) {
+	public ResponseEntity<?> createUser(@RequestBody @Valid UserRequestDto requestDto) {
 	    return userService.createUser(requestDto);
 
 	}

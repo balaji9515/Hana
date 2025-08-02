@@ -4,10 +4,9 @@ import lombok.Data;
 
 @Data
 public class ProductRequestDto {
-	private Long id;
-
-	private String name;
-
+	private String productName;
+	private String categoryName;
 	private String discription;
-
+	private InventoryRequestDto inventoryRequestDto;
+	
 }
