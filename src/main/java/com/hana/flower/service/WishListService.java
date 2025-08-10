@@ -11,6 +11,7 @@ import com.hana.flower.model.User;
 import com.hana.flower.model.WishList;
 import com.hana.flower.repository.WishListItemRepository;
 import com.hana.flower.repository.WishListRepository;
+import com.hana.flower.wrapper.ServiceResponse;
 
 public class WishListService {
 
@@ -36,9 +37,9 @@ public class WishListService {
 	}
 
 	public WishList getWishList(long userId) {
-		User user = userService.getUser(userId);
+		ServiceResponse<User> user = userService.getUserById(userId);
 
-		return user.getWishList();
+		return user.getData().getWishList();
 
 	}
 

@@ -10,7 +10,7 @@ import com.hana.flower.model.CartItem;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long>{
 	
-	@Query("SELECT ci FROM CartItem ci WHERE ci.cartId.id = :cartId")
+	@Query(value="select * from cart_items c where c.cart_id = : cartId", nativeQuery = true)
 	List<CartItem> findAllByCartId(@Param("cartId") Long cartId);
 
 }

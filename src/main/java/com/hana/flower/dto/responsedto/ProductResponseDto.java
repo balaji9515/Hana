@@ -1,5 +1,10 @@
 package com.hana.flower.dto.responsedto;
 
-public class ProductResponseDto {
+import lombok.Data;
 
+@Data
+public class ProductResponseDto {
+	public String productName;
+	public String categoryName;
+	public String productDescription;
 }

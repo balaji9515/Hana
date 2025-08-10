@@ -2,20 +2,21 @@ package com.hana.flower.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.hana.flower.dto.requestdto.UserRequestDto;
-import com.hana.flower.dto.responsedto.UserResponseDto;
 import com.hana.flower.enums.UserType;
 import com.hana.flower.exception.custom.HanaApplicationException;
+import com.hana.flower.model.Cart;
 import com.hana.flower.model.User;
 import com.hana.flower.repository.UserRepository;
+import com.hana.flower.wrapper.ServiceResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,25 +32,22 @@ public class UserService {
 	@Autowired
 	private final ModelMapper modelMapper;
 
-	public List<UserResponseDto> getAllUsers() {
-		return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserResponseDto.class))
-				.collect(Collectors.toList());
+	public ServiceResponse<List<User>> getAllUsers() {
+
+		return ServiceResponse.of("List of Users", userRepository.findAll(), HttpStatus.OK);
 
 	}
 
-	public ResponseEntity<?> getUserById(Long id) {
-		User user = getUser(id);
-		if(null==user) return new ResponseEntity<>("user not found",HttpStatus.OK);
-		return new ResponseEntity<UserResponseDto>(modelMapper.map(user, UserResponseDto.class), HttpStatus.OK);
-	}
+	public ServiceResponse<User> getUserById(Long id) {
 
-	public User getUser(Long id) {
-		try {
-			return userRepository.findById(id).orElseThrow(() -> new HanaApplicationException("User not found"));
-		} catch (HanaApplicationException e) {
-			log.info(e.getMessage());
+		Optional<User> user = userRepository.findById(id);
+
+		if (user.isEmpty()) {
+			return ServiceResponse.of("user Not Found", new User(), HttpStatus.NOT_FOUND);
+		} else {
+			return ServiceResponse.of("User found", user.get(), HttpStatus.OK);
 		}
-		return null;
+
 	}
 
 	public User getUserByPhoneNumber(String phoneNumber) {
@@ -64,37 +62,51 @@ public class UserService {
 		return user;
 	}
 
-	public ResponseEntity<?> createUser(UserRequestDto userDetails) {
+	public ServiceResponse<User> createUser(UserRequestDto userDetails) {
 
 		User user = getUserByPhoneNumber(userDetails.getPhoneNumber());
 
-		if (null == user) {
+		if (Objects.isNull(user)) {
 
 			User createdUser = User.builder().firstName(userDetails.getFirstName()).lastName(userDetails.getLastName())
 					.password(userDetails.getPassword()).userEmail(userDetails.getUserEmail())
 					.phoneNumber(userDetails.getPhoneNumber()).userName(userDetails.getUserName())
 					.userType(UserType.CUSTOMER).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
+
+			Cart cart = Cart.builder().user(createdUser).totalPrice(0L).createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now()).build();
+			createdUser.setCart(cart);
 			User saved = userRepository.save(createdUser);
-			return new ResponseEntity<>(modelMapper.map(saved, UserResponseDto.class),HttpStatus.CREATED);
+			return ServiceResponse.of("user created", saved, HttpStatus.CREATED);
 		}
 
 		else {
-			return new ResponseEntity<>("User Already Existed",HttpStatus.CONFLICT);
+			return ServiceResponse.of("User Already Existed", user, HttpStatus.CONFLICT);
 		}
 
 	}
 
-	public ResponseEntity<UserResponseDto> updateUser(Long id, UserRequestDto userDetails) {
-		User existing = getUser(id);
-		modelMapper.map(userDetails, existing); // update fields
-		User updated = userRepository.save(existing);
-		return new ResponseEntity<UserResponseDto>(modelMapper.map(updated, UserResponseDto.class), HttpStatus.OK);
+	public ServiceResponse<User> updateUser(Long id, UserRequestDto userDetails) {
+		Optional<User> optonalUser = userRepository.findById(id);
+		User user = optonalUser.get();
+		if (Objects.isNull(user)) {
+			return ServiceResponse.of("User Not Found", new User(), HttpStatus.NOT_FOUND);
+		} else {
+			modelMapper.map(userDetails, user);
+			User updated = userRepository.save(user);
+			return ServiceResponse.of("User Updated Successfully", updated, HttpStatus.OK);
+		}
+
 	}
 
-	public ResponseEntity<?> deleteUser(Long id) {
-		User product = getUser(id);
-		userRepository.delete(product);
-		return new ResponseEntity<String>("User deleted succesfully", HttpStatus.OK);
+	public ServiceResponse<User> deleteUser(Long id) {
+		Optional<User> user = userRepository.findById(id);
+		if (Objects.isNull(user)) {
+			return ServiceResponse.of("User Not Found", new User(), HttpStatus.NOT_FOUND);
+		} else {
+			userRepository.delete(user.get());
+			return ServiceResponse.of("user deleted successfully", user.get(), HttpStatus.OK);
+		}
 
 	}
 }

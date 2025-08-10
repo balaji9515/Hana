@@ -1,14 +1,13 @@
 package com.hana.flower.wrapper;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import ch.qos.logback.core.model.Model;
+import io.micrometer.common.lang.NonNull;
 import lombok.Data;
 
 @Data
 public class ServiceResponse<T> {
     private String message;
+    @NonNull
     private T data;
     private HttpStatus httpStatus;
 
